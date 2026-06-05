@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Moliyaviy Hisobot - i-Mobile{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4"><i class="bi bi-calculator"></i> Moliyaviy Hisobot</h1>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="stat-card primary">
+                <h5>Jami Savdo</h5>
+                <h2>{{ total_sales|money }}&nbsp;<small style="font-size:0.52em;opacity:0.85;font-weight:500;">сўм</small></h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card success">
+                <h5>Jami To'langan</h5>
+                <h2>{{ total_payments|money }}&nbsp;<small style="font-size:0.52em;opacity:0.85;font-weight:500;">сўм</small></h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card warning">
+                <h5>Jami Qarz</h5>
+                <h2>{{ total_debt|money }}&nbsp;<small style="font-size:0.52em;opacity:0.85;font-weight:500;">сўм</small></h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Type Chart -->
+    <div class="row mb-4">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">To'lov Turi Taqqoslovi</h5>
+                </div>
+                <div class="card-body">
+                    <div style="position:relative; height:280px;">
+                        <canvas id="paymentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Bo'limlar</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <td>Naqd</td>
+                            <td><strong>{{ cash_sales|summa }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Karta</td>
+                            <td><strong>{{ card_sales|summa }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Nasiya</td>
+                            <td><strong>{{ credit_sales_total|summa }}</strong></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    const labels = {{ chart_payment_type_labels|safe }};
+    const data = {{ chart_payment_type_data|safe }};
+
+    const ctx = document.getElementById('paymentChart');
+    if (!ctx) return;
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: ['#4caf50', '#2196f3', '#ff9800']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                    callbacks: {
+                        label: function(c){ return c.label + ': ' + c.parsed.toLocaleString() + ' сўм'; }
+                    }
+                }
+            }
+        }
+    });
+})();
+</script>
+{% endblock %}

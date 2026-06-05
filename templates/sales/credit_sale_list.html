@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Nasiya Savdolar - i-Mobile{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4"><i class="bi bi-credit-card"></i> Nasiya Savdolar</h1>
+    
+    <!-- Credit Sales Table -->
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Mijoz</th>
+                        <th>Mahsulot</th>
+                        <th>Sana</th>
+                        <th>Jami narx</th>
+                        <th>To'langan</th>
+                        <th>Qolgan Qarz</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in sales %}
+                    <tr class="clickable-row" data-href="{% url 'sales:sale_detail' sale.pk %}" style="cursor:pointer;">
+                        <td><strong>{{ sale.customer.full_name }}</strong></td>
+                        <td>{{ sale.product.brand }} {{ sale.product.model }}</td>
+                        <td>{{ sale.date|date:"d.m.Y" }}</td>
+                        <td>{{ sale.total_price|summa }}</td>
+                        <td class="text-success">{{ sale.paid_amount|summa }}</td>
+                        <td class="text-danger">
+                            <strong>{{ sale.remaining_amount|summa }}</strong>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">
+                            Hech qanday nasiya savdo yo'q.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1">Birinchi</a>
+            </li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Keyingi</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

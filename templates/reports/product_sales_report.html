@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Mahsulot Savdo Hisoboti - i-Mobile{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4"><i class="bi bi-phone"></i> Mahsulot Savdo Hisoboti</h1>
+
+    <!-- Top Products Chart -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">Eng ko'p sotilgan 10 mahsulot</h6>
+                </div>
+                <div class="card-body">
+                    <div style="position:relative; height:320px;">
+                        <canvas id="topProductsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Products Table -->
+    <div class="card">
+        <div class="card-header">
+            <h6 class="mb-0">Mahsulot savdo ko'rsatkichlari</h6>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width:50px;">#</th>
+                        <th>Mahsulot</th>
+                        <th>Brand</th>
+                        <th class="text-center">Sotilgan miqdor</th>
+                        <th>Jami summa</th>
+                        <th>O'rtacha narx</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in top_products %}
+                    <tr>
+                        <td class="text-center"><strong>{{ forloop.counter }}</strong></td>
+                        <td><strong>{{ product.display_name }}</strong></td>
+                        <td>{{ product.brand }}</td>
+                        <td class="text-center">
+                            <span class="badge bg-primary">{{ product.quantity_sold }} ta</span>
+                        </td>
+                        <td>{{ product.total_revenue|summa }}</td>
+                        <td>{{ product.avg_price|summa }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">
+                            Hech qanday savdo hali yo'q.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    const labels    = {{ product_labels|safe }};
+    const quantities = {{ product_quantities|safe }};
+
+    const ctx = document.getElementById('topProductsChart');
+    if (!ctx) return;
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Sotilgan miqdor (ta)',
+                data: quantities,
+                backgroundColor: [
+                    'rgba(255,99,132,0.75)','rgba(54,162,235,0.75)',
+                    'rgba(255,206,86,0.75)','rgba(75,192,192,0.75)',
+                    'rgba(153,102,255,0.75)','rgba(255,159,64,0.75)',
+                    'rgba(199,199,199,0.75)','rgba(83,102,255,0.75)',
+                    'rgba(255,99,200,0.75)','rgba(150,200,100,0.75)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: { legend: { display: false } },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: { callback: function(v){ return v + ' ta'; } }
+                }
+            }
+        }
+    });
+})();
+</script>
+{% endblock %}

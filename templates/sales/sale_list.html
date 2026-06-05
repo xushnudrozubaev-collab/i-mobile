@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Savdolar - i-Mobile{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bi bi-receipt"></i> Savdolar</h1>
+        {% if user.is_seller or user.is_admin %}
+        <a href="{% url 'sales:sale_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Yangi Savdo
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Filter Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="search" class="form-control"
+                           placeholder="Mijoz yoki mahsulot bo'yicha qidirish..."
+                           value="{{ request.GET.search }}">
+                </div>
+                <div class="col-md-2">
+                    <select name="payment_type" class="form-select">
+                        <option value="">Barcha to'lov turlari</option>
+                        <option value="cash"   {% if request.GET.payment_type == 'cash'   %}selected{% endif %}>Naqd</option>
+                        <option value="card"   {% if request.GET.payment_type == 'card'   %}selected{% endif %}>Karta</option>
+                        <option value="credit" {% if request.GET.payment_type == 'credit' %}selected{% endif %}>Nasiya</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="status" class="form-select">
+                        <option value="">Barcha statuslar</option>
+                        <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>To'liq to'langan</option>
+                        <option value="pending"   {% if request.GET.status == 'pending'   %}selected{% endif %}>Qolgan qarz</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Filtrlash
+                    </button>
+                </div>
+                <div class="col-md-2">
+                    <a href="{% url 'sales:sale_list' %}" class="btn btn-secondary w-100">
+                        <i class="bi bi-arrow-clockwise"></i> Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sales Table -->
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Mijoz</th>
+                        <th>Mahsulot</th>
+                        <th>Sotuvchi</th>
+                        <th>Sana</th>
+                        <th>To'lov turi</th>
+                        <th>Chegirma</th>
+                        <th>Jami narx</th>
+                        <th>Status</th>
+                        <th>Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in sales %}
+                    <tr class="clickable-row" data-href="{% url 'sales:sale_detail' sale.pk %}" style="cursor:pointer;">
+                        <td class="text-muted small">{{ sale.pk }}</td>
+                        <td><strong>{{ sale.customer.full_name }}</strong></td>
+                        <td>{{ sale.product.brand }} {{ sale.product.model }}</td>
+                        <td>{{ sale.seller.get_full_name|default:sale.seller.username }}</td>
+                        <td>{{ sale.date|date:"d.m.Y" }}</td>
+                        <td>
+                            {% if sale.payment_type == 'cash' %}
+                            <span class="badge bg-success">Naqd</span>
+                            {% elif sale.payment_type == 'card' %}
+                            <span class="badge bg-primary">Karta</span>
+                            {% else %}
+                            <span class="badge bg-warning text-dark">Nasiya</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if sale.discount_amount %}
+                            <span class="text-danger">-{{ sale.discount_amount|summa }}</span>
+                            {% else %}<span class="text-muted">—</span>{% endif %}
+                        </td>
+                        <td><strong>{{ sale.total_price|summa }}</strong></td>
+                        <td>
+                            {% if sale.is_completed %}
+                            <span class="badge bg-success">To'landi</span>
+                            {% else %}
+                            <span class="badge bg-danger">{{ sale.remaining_amount|summa }} qoldi</span>
+                            {% endif %}
+                        </td>
+                        <td onclick="event.stopPropagation();">
+                            {% if not sale.is_completed and user.is_manager or not sale.is_completed and user.is_admin %}
+                            <a href="{% url 'sales:payment_create' %}?sale={{ sale.pk }}" class="btn btn-sm btn-success" title="To'lov qo'shish">
+                                <i class="bi bi-cash-coin"></i>
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="10" class="text-center py-4 text-muted">
+                            Hech qanday savdo topilmadi.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Savdo Hisoboti - i-Mobile{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4"><i class="bi bi-bar-chart"></i> Savdo Hisoboti</h1>
+    
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="stat-card success">
+                <h5>Bugungi Savdolar</h5>
+                <h2>{{ today_sales_count }}</h2>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="stat-card">
+                <h5>Bugungi Tushum</h5>
+                <h2>{{ today_sales_total|money }}&nbsp;<small style="font-size:0.52em;opacity:0.85;font-weight:500;">сўм</small></h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="stat-card info">
+                <h5>Oylik Savdolar</h5>
+                <h2>{{ month_sales_count }}</h2>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="stat-card warning">
+                <h5>Oylik Tushum</h5>
+                <h2>{{ month_sales_total|money }}&nbsp;<small style="font-size:0.52em;opacity:0.85;font-weight:500;">сўм</small></h2>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charts -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">O'tgan 7 Kunning Savdo Trendlari</h5>
+                </div>
+                <div class="card-body">
+                    <div style="position:relative; height:280px;">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">To'lov Turi Bo'yicha</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        {% for item in payment_type_analysis %}
+                        <tr>
+                            <td>
+                                {% if item.payment_type == 'cash' %}Naqd pul
+                                {% elif item.payment_type == 'card' %}Karta
+                                {% elif item.payment_type == 'credit' %}Nasiya
+                                {% else %}{{ item.payment_type }}{% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-info">{{ item.count }} та</span>
+                            </td>
+                            <td>
+                                <strong>{{ item.total|summa }}</strong>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    const labels = {{ chart_sales_labels|safe }};
+    const data = {{ chart_sales_data|safe }};
+
+    const ctx = document.getElementById('salesChart');
+    if (!ctx) return;
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Savdo Summasi',
+                data: data,
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                tension: 0.4,
+                fill: true,
+                pointRadius: 5,
+                pointBackgroundColor: '#667eea'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: true, position: 'top' },
+                tooltip: {
+                    callbacks: {
+                        label: function(c){ return c.parsed.y.toLocaleString() + ' сўм'; }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(v){
+                            if(v >= 1e9) return (v/1e9).toFixed(1)+' mlrd';
+                            if(v >= 1e6) return (v/1e6).toFixed(0)+' mln';
+                            return v.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    });
+})();
+</script>
+{% endblock %}

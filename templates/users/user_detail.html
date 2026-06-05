@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}{{ user.get_full_name|default:user.username }} - Foydalanuvchi Tafsiloti - i-Mobile{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3 class="card-title mb-0">
+                    <i class="bi bi-person-circle"></i> {{ user.get_full_name|default:user.username }}
+                </h3>
+                <div>
+                    {% if user.pk != request.user.pk or request.user.is_admin %}
+                    <a href="{% url 'users:user_edit' user.pk %}" class="btn btn-sm btn-warning text-white">
+                        <i class="bi bi-pencil"></i> Tahrirlash
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h6 class="text-muted">Username</h6>
+                    <p class="h5">{{ user.username }}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h6 class="text-muted">Email</h6>
+                    <p class="h5">{{ user.email }}</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h6 class="text-muted">Ismi</h6>
+                    <p class="h5">{{ user.first_name|default:"-" }}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h6 class="text-muted">Familyasi</h6>
+                    <p class="h5">{{ user.last_name|default:"-" }}</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h6 class="text-muted">Telefon Raqami</h6>
+                    <p class="h5">{{ user.phone_number|default:"-" }}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h6 class="text-muted">Rol</h6>
+                    <p class="h5">
+                        <span class="badge bg-primary">{{ user.get_role_display }}</span>
+                    </p>
+                </div>
+            </div>
+            
+            <hr>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="text-muted">Yaratilgan Sana</h6>
+                    <p class="h5">{{ user.created_at|date:"d.m.Y H:i" }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="text-muted">Status</h6>
+                    <p class="h5">
+                        {% if user.is_active %}
+                        <span class="badge bg-success">Faol</span>
+                        {% else %}
+                        <span class="badge bg-danger">Faol emas</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if request.user.is_admin and request.user.pk != user.pk %}
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0 text-danger">Foydalanuvchini O'chirish</h5>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">Bu foydalanuvchi o'chirilsa, unga bog'langan barcha ma'lumotlar ham o'chirilib ketadi.</p>
+            <a href="{% url 'users:user_delete' user.pk %}" class="btn btn-danger">
+                <i class="bi bi-trash"></i> O'chirish
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

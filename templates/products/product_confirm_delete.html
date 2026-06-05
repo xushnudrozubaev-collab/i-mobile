@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}{{ product.display_name }} ni o'chirish - Tasdiq{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">⚠️ Ogohlantirish</h4>
+                <p>Siz <strong>{{ product.display_name }}</strong> ni o'chirishni xohlayapsiz.</p>
+                <hr>
+                <p class="mb-0">Bu operatsiya <strong>qaytarib bo'lmasliq</strong> va barcha bog'langan savdo ma'lumotlari ham ta'sirlandi.</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Mahsulot Ma'lumotlari</h5>
+                    <dl class="row">
+                        <dt class="col-sm-6">Brend:</dt>
+                        <dd class="col-sm-6">{{ product.brand }}</dd>
+                        
+                        <dt class="col-sm-6">Model:</dt>
+                        <dd class="col-sm-6">{{ product.model }}</dd>
+                        
+                        <dt class="col-sm-6">IMEI:</dt>
+                        <dd class="col-sm-6">{{ product.imei }}</dd>
+                        
+                        <dt class="col-sm-6">Narx:</dt>
+                        <dd class="col-sm-6">{{ product.price|summa }}</dd>
+                    </dl>
+                </div>
+            </div>
+            
+            <div class="mt-4 d-grid gap-2 d-md-flex justify-content-md-end">
+                <a href="{% url 'products:product_detail' product.pk %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Orqaga Qaytish
+                </a>
+                <form method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Ha, O'chirib Yuborish
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

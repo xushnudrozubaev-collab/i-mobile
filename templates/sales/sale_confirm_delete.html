@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block title %}Savdoni O'chirish - i-Mobile{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Savdoni O'chirish</h4>
+                </div>
+                <div class="card-body">
+                    <p class="lead">Quyidagi savdoni o'chirishni tasdiqlaysizmi?</p>
+                    <ul class="list-group mb-4">
+                        <li class="list-group-item"><strong>Savdo #:</strong> {{ object.pk }}</li>
+                        <li class="list-group-item"><strong>Mijoz:</strong> {{ object.customer.full_name }}</li>
+                        <li class="list-group-item"><strong>Mahsulot:</strong> {{ object.product.brand }} {{ object.product.model }}</li>
+                        <li class="list-group-item"><strong>Summa:</strong> {{ object.total_price|summa }}</li>
+                        <li class="list-group-item"><strong>Sana:</strong> {{ object.date|date:"d.m.Y" }}</li>
+                    </ul>
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-circle"></i>
+                        Bu amalni qaytarib bo'lmaydi. Savdo o'chirilgach, barcha to'lovlar ham o'chiriladi.
+                    </div>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'sales:sale_list' %}" class="btn btn-secondary flex-fill">
+                                <i class="bi bi-arrow-left"></i> Bekor qilish
+                            </a>
+                            <button type="submit" class="btn btn-danger flex-fill">
+                                <i class="bi bi-trash"></i> Ha, o'chirish
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Ombor Hisoboti - i-Mobile{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4"><i class="bi bi-box-seam"></i> Ombor Hisoboti</h1>
+    
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card border-left-primary">
+                <div class="card-body">
+                    <p class="card-text text-muted">Jami mahsulot turi</p>
+                    <h4 class="card-title text-primary">{{ total_products }} ta</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-left-success">
+                <div class="card-body">
+                    <p class="card-text text-muted">Jami miqdor</p>
+                    <h4 class="card-title text-success">{{ total_quantity }} ta</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-left-info">
+                <div class="card-body">
+                    <p class="card-text text-muted">Ombordagi balans</p>
+                    <h4 class="card-title text-info">{{ inventory_value|summa }}</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-left-danger">
+                <div class="card-body">
+                    <p class="card-text text-muted">Kam mahsulotlar</p>
+                    <h4 class="card-title text-danger">{{ low_stock_count }} ta</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Low Stock Alerts -->
+    {% if low_stock_products %}
+    <div class="card mb-4">
+        <div class="card-header bg-warning">
+            <h6 class="mb-0 text-dark"><i class="bi bi-exclamation-triangle"></i> Kam miqdordagi mahsulotlar (≤5 ta)</h6>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Mahsulot</th>
+                        <th>Brand</th>
+                        <th>IMEI</th>
+                        <th>Ombordagi miqdor</th>
+                        <th>Narx</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in low_stock_products %}
+                    <tr class="table-warning">
+                        <td><strong>{{ product.display_name }}</strong></td>
+                        <td>{{ product.brand }}</td>
+                        <td>{{ product.imei }}</td>
+                        <td>
+                            <span class="badge bg-danger">{{ product.stock_quantity }} ta</span>
+                        </td>
+                        <td>{{ product.price|summa }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- All Inventory Table -->
+    <div class="card">
+        <div class="card-header">
+            <h6 class="mb-0">Barcha mahsulotlar</h6>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Mahsulot</th>
+                        <th>Brand</th>
+                        <th>Model</th>
+                        <th>IMEI</th>
+                        <th>Ombordagi miqdor</th>
+                        <th>Narx</th>
+                        <th>Jami narxi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td><strong>{{ product.display_name }}</strong></td>
+                        <td>{{ product.brand }}</td>
+                        <td>{{ product.model }}</td>
+                        <td>{{ product.imei }}</td>
+                        <td>
+                            {% if product.stock_quantity == 0 %}
+                            <span class="badge bg-dark">{{ product.stock_quantity }} ta</span>
+                            {% elif product.stock_quantity <= 5 %}
+                            <span class="badge bg-danger">{{ product.stock_quantity }} ta</span>
+                            {% elif product.stock_quantity <= 20 %}
+                            <span class="badge bg-warning">{{ product.stock_quantity }} ta</span>
+                            {% else %}
+                            <span class="badge bg-success">{{ product.stock_quantity }} ta</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ product.price|summa }}</td>
+                        <td class="fw-bold text-primary">{{ product.inventory_value|summa }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+.border-left-primary { border-left: 4px solid #007bff; }
+.border-left-success { border-left: 4px solid #28a745; }
+.border-left-info { border-left: 4px solid #17a2b8; }
+.border-left-danger { border-left: 4px solid #dc3545; }
+</style>
+{% endblock %}

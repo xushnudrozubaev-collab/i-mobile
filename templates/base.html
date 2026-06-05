@@ -1,0 +1,481 @@
+    <!DOCTYPE html>
+{% load static %}
+<html lang="uz">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}i-Mobile{% endblock %}</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+        <style>
+            :root {
+                --primary-color: #0d6efd;
+                --sidebar-width: 250px;
+            }
+            
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: #f8f9fa;
+            }
+            
+            /* Navbar */
+            .navbar {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                padding: 1rem 2rem;
+            }
+            
+            .navbar-brand {
+                font-weight: 700;
+                font-size: 1.5rem;
+                color: #fff !important;
+            }
+            
+            /* Sidebar */
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                width: var(--sidebar-width);
+                background: #2c3e50;
+                padding-top: 70px;
+                overflow-y: auto;
+                z-index: 100;
+            }
+            
+            .sidebar .nav-link {
+                color: #ecf0f1;
+                padding: 12px 20px;
+                border-left: 3px solid transparent;
+                transition: all 0.3s ease;
+            }
+            
+            .sidebar .nav-link:hover,
+            .sidebar .nav-link.active {
+                background-color: rgba(52, 152, 219, 0.2);
+                border-left-color: #3498db;
+                color: #fff;
+            }
+            
+            .sidebar .nav-link i {
+                margin-right: 10px;
+            }
+            
+            .sidebar-header {
+                padding: 15px 20px;
+                color: #3498db;
+                font-weight: 600;
+                font-size: 0.85rem;
+                text-transform: uppercase;
+            }
+            
+            /* Main Content */
+            main {
+                margin-left: var(--sidebar-width);
+                margin-top: 70px;
+                padding: 30px;
+                min-height: 100vh;
+            }
+            
+            /* Cards */
+            .card {
+                border: none;
+                border-radius: 10px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+            
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            }
+            
+            /* Stat Cards */
+            .stat-card {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 20px;
+                border-radius: 10px;
+                text-align: center;
+            }
+            
+            .stat-card.success {
+                background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            }
+            
+            .stat-card.warning {
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            }
+            
+            .stat-card.info {
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            }
+            
+            .stat-card h5 {
+                margin: 10px 0 0 0;
+                font-size: 0.9rem;
+                opacity: 0.9;
+            }
+            
+            .stat-card h2 {
+                font-size: clamp(1.1rem, 2.2vw, 2rem);
+                font-weight: bold;
+                margin: 10px 0 0 0;
+                word-break: break-word;
+                line-height: 1.2;
+                overflow-wrap: break-word;
+            }
+            
+            /* Tables */
+            .table {
+                background: white;
+            }
+            
+            .table thead th {
+                background-color: #f8f9fa;
+                border-bottom: 2px solid #dee2e6;
+                color: #333;
+                font-weight: 600;
+            }
+            
+            /* Buttons */
+            .btn {
+                border-radius: 5px;
+                padding: 0.5rem 1rem;
+                font-weight: 500;
+                transition: all 0.3s ease;
+            }
+            
+            .btn-primary {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border: none;
+            }
+            
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            }
+            
+            /* Forms */
+            .form-control, .form-select {
+                border-radius: 5px;
+                border: 1px solid #ddd;
+                padding: 0.6rem 0.8rem;
+            }
+            
+            .form-control:focus, .form-select:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            }
+            
+            /* Alerts */
+            .alert {
+                border: none;
+                border-radius: 8px;
+            }
+            
+            .alert-success {
+                background-color: #d4edda;
+                color: #155724;
+            }
+            
+            .alert-danger {
+                background-color: #f8d7da;
+                color: #721c24;
+            }
+            
+            .alert-warning {
+                background-color: #fff3cd;
+                color: #856404;
+            }
+            
+            /* Pagination */
+            .pagination {
+                gap: 5px;
+            }
+            
+            .pagination .page-link {
+                border-radius: 5px;
+                border: none;
+                background-color: #f8f9fa;
+                color: #667eea;
+            }
+            
+            .pagination .page-link:hover {
+                background-color: #667eea;
+                color: white;
+            }
+            
+            .pagination .page-item.active .page-link {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-color: #667eea;
+            }
+            
+            /* Footer */
+            footer {
+                background: #2c3e50;
+                color: #ecf0f1;
+                padding: 20px;
+                text-align: center;
+                margin-left: var(--sidebar-width);
+                border-top: 1px solid #34495e;
+            }
+            
+            /* Responsive */
+            /* Desktop: sidebar always visible */
+            @media (min-width: 768px) {
+                .sidebar {
+                    transform: none !important;
+                    left: 0;
+                    width: var(--sidebar-width);
+                    position: fixed;
+                }
+                main { margin-left: var(--sidebar-width); margin-top: 70px; }
+                footer { margin-left: var(--sidebar-width); }
+            }
+
+            /* Mobile: sidebar off-canvas by default */
+            @media (max-width: 767.98px) {
+                .sidebar {
+                    width: 80%;
+                    max-width: 320px;
+                    height: 100vh;
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    transform: translateX(-110%);
+                    transition: transform 0.3s ease;
+                    padding-top: 70px;
+                    z-index: 1050;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                }
+
+                .sidebar.open {
+                    transform: translateX(0);
+                }
+
+                main { margin-left: 0; margin-top: 0; }
+
+                footer { margin-left: 0; }
+
+                /* Overlay when sidebar is open */
+                .sidebar-overlay {
+                    display: none;
+                    position: fixed;
+                    inset: 0;
+                    background: rgba(0,0,0,0.45);
+                    z-index: 1040;
+                    transition: opacity 0.3s ease;
+                    opacity: 0;
+                }
+
+                .sidebar-overlay.active {
+                    display: block;
+                    opacity: 1;
+                }
+            }
+            
+            /* Breadcrumb */
+            .breadcrumb {
+                background-color: transparent;
+                padding: 0;
+                margin-bottom: 20px;
+            }
+            
+            .breadcrumb-item.active {
+                color: #666;
+            }
+            
+            /* Clickable table rows */
+            tr.clickable-row:hover td {
+                background-color: #f0f4ff;
+            }
+
+            /* Badge */
+            .badge {
+                padding: 0.4rem 0.7rem;
+                border-radius: 20px;
+                font-size: 0.85rem;
+            }
+        </style>
+        {% block extra_css %}{% endblock %}
+    </head>
+    <body>
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{% url 'users:dashboard' %}">
+                    <i class="bi bi-phone"></i> i-Mobile 
+                </a>
+                <!-- Sidebar toggle for mobile -->
+                <button id="sidebarToggle" class="btn btn-link text-white d-md-none ms-2" aria-label="Toggle sidebar">
+                    <i class="bi bi-list" style="font-size:1.25rem;"></i>
+                </button>
+                <button class="navbar-toggler d-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle"></i> {{ user.get_full_name|default:user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="{% url 'users:user_detail' user.pk %}">Profilim</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'users:logout' %}">Chiqish</a></li>
+                            </ul>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'users:login' %}">Kirish</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Sidebar -->
+        {% if user.is_authenticated %}
+        <aside class="sidebar">
+            <nav class="nav flex-column">
+                <div class="sidebar-header">Asosiy</div>
+                <a class="nav-link" href="{% url 'users:dashboard' %}">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+                
+                {% if user.is_seller or user.is_manager or user.is_admin %}
+                <div class="sidebar-header">Boshqaruv</div>
+                <a class="nav-link" href="{% url 'customers:customer_list' %}">
+                    <i class="bi bi-people"></i> Mijozlar
+                </a>
+                <a class="nav-link" href="{% url 'sales:sale_list' %}">
+                    <i class="bi bi-receipt"></i> Savdolar
+                </a>
+                <a class="nav-link" href="{% url 'sales:credit_sale_list' %}">
+                    <i class="bi bi-credit-card"></i> Nasiya
+                </a>
+                {% endif %}
+                
+                {% if user.is_warehouse_manager or user.is_manager or user.is_admin %}
+                <div class="sidebar-header">Ombor</div>
+                <a class="nav-link" href="{% url 'products:product_list' %}">
+                    <i class="bi bi-box"></i> Mahsulotlar
+                </a>
+                {% endif %}
+                
+                {% if user.is_manager or user.is_admin %}
+                <div class="sidebar-header">Hisobotlar</div>
+                <a class="nav-link" href="{% url 'reports:sales_report' %}">
+                    <i class="bi bi-bar-chart"></i> Savdolar
+                </a>
+                <a class="nav-link" href="{% url 'reports:product_sales_report' %}">
+                    <i class="bi bi-graph-up"></i> Mahsulotlar
+                </a>
+                <a class="nav-link" href="{% url 'reports:inventory_report' %}">
+                    <i class="bi bi-collection"></i> Ombor
+                </a>
+                <a class="nav-link" href="{% url 'reports:seller_performance' %}">
+                    <i class="bi bi-award"></i> Sotuvchilar
+                </a>
+                {% endif %}
+                
+                {% if user.is_admin %}
+                <div class="sidebar-header">Admin</div>
+                <a class="nav-link" href="{% url 'admin:index' %}">
+                    <i class="bi bi-sliders"></i> Admin Paneli
+                </a>
+                <a class="nav-link" href="{% url 'users:user_list' %}">
+                    <i class="bi bi-shield-check"></i> Foydalanuvchilar
+                </a>
+                {% endif %}
+            </nav>
+        </aside>
+        {% endif %}
+        
+        <!-- Main Content -->
+        <main>
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            {% block content %}{% endblock %}
+        </main>
+        
+        <!-- Footer -->
+        <footer>
+            <p>&copy; 2026 i-Mobile. Barcha huquqlar himoyalangan.</p>
+        </footer>
+        
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="{% static 'js/chart.min.js' %}"></script>
+        <!-- Sidebar toggle script -->
+        <script>
+            (function(){
+                const toggle = document.getElementById('sidebarToggle');
+                const sidebar = document.querySelector('.sidebar');
+                // create overlay element
+                let overlay = document.createElement('div');
+                overlay.className = 'sidebar-overlay';
+                document.body.appendChild(overlay);
+
+                function openSidebar(){
+                    if(!sidebar) return;
+                    sidebar.classList.add('open');
+                    overlay.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    const nav = document.getElementById('navbarNav');
+                    if(nav && !nav.classList.contains('show')) nav.classList.add('show');
+                }
+
+                function closeSidebar(){
+                    if(!sidebar) return;
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                    const nav = document.getElementById('navbarNav');
+                    if(nav && nav.classList.contains('show')) nav.classList.remove('show');
+                }
+
+                if(toggle){
+                    toggle.addEventListener('click', function(e){
+                        e.stopPropagation();
+                        if(sidebar.classList.contains('open')) closeSidebar(); else openSidebar();
+                    });
+                }
+
+                overlay.addEventListener('click', function(){ closeSidebar(); });
+
+                // close on ESC
+                document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeSidebar(); });
+
+                // ensure state resets on resize to desktop
+                window.addEventListener('resize', function(){ if(window.innerWidth >= 768){ closeSidebar(); overlay.remove(); } });
+            })();
+            // Clickable rows — qatorni bosib detail sahifaga o'tish
+        document.addEventListener('click', function(e){
+            const row = e.target.closest('tr.clickable-row');
+            if(!row) return;
+            const href = row.getAttribute('data-href');
+            if(href) window.location.href = href;
+        });
+    </script>
+        {% block extra_js %}{% endblock %}
+    </body>
+    </html>

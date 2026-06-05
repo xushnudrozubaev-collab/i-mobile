@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Mahsulotlar - i-Mobile {% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bi bi-box"></i> Mahsulotlar</h1>
+        <a href="{% url 'products:product_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Yangi Mahsulot Qo'shish
+        </a>
+    </div>
+    
+    <!-- Search and Filter Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-5">
+                    <input type="text" name="search" class="form-control" placeholder="Brend, model yoki IMEI bo'yicha qidirish..." value="{{ request.GET.search }}">
+                </div>
+                <div class="col-md-3">
+                    <select name="brand" class="form-select">
+                        <option value="">Barcha brendlar</option>
+                        {% for b in brands %}
+                        <option value="{{ b }}" {% if request.GET.brand == b %}selected{% endif %}>{{ b }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-check">
+                        <input type="checkbox" name="in_stock" value="on" class="form-check-input" {% if request.GET.in_stock == 'on' %}checked{% endif %}>
+                        <span class="form-check-label">Faqat ombordan</span>
+                    </label>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Qidirish
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Products Grid -->
+    <div class="row">
+        {% for product in products %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 clickable-row" data-href="{% url 'products:product_detail' product.pk %}" style="cursor:pointer;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.brand }} {{ product.model }}</h5>
+                    <p class="card-text text-muted">
+                        <strong>IMEI:</strong> {{ product.imei }}<br>
+                        <strong>Narx:</strong> <span class="text-success">{{ product.price|summa }}</span><br>
+                        <strong>Ombor:</strong>
+                        {% if product.stock_quantity > 0 %}
+                            <span class="badge bg-success">{{ product.stock_quantity }} та</span>
+                        {% else %}
+                            <span class="badge bg-danger">Yo'q</span>
+                        {% endif %}<br>
+                        <strong>Kafolat:</strong> {{ product.warranty_months }} oy
+                    </p>
+                </div>
+                <div class="card-footer bg-white border-top" onclick="event.stopPropagation();">
+                    <a href="{% url 'products:product_edit' product.pk %}" class="btn btn-sm btn-warning">
+                        <i class="bi bi-pencil"></i> Tahrirlash
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center" role="alert">
+                <i class="bi bi-info-circle"></i> Hech qanday mahsulot topilmadi.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1">Birinchi</a>
+            </li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Keyingi</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

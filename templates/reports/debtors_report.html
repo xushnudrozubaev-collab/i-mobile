@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Qarzdor Mijozlar - i-Mobile {% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4"><i class="bi bi-exclamation-triangle"></i> Qarzdor Mijozlar Hisoboti</h1>
+    
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="stat-card warning">
+                <h5>Jami Qarzdor Mijozlar</h5>
+                <h2>{{ debtors_count }}</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card danger">
+                <h5>Jami Qarz</h5>
+                <h2>{{ total_debt|money }}&nbsp;<small style="font-size:0.52em;opacity:0.85;font-weight:500;">сўм</small></h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card success">
+                <h5>O'rtacha Qarz</h5>
+                <h2>{{ average_debt|money }}&nbsp;<small style="font-size:0.52em;opacity:0.85;font-weight:500;">сўм</small></h2>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Debtors Table -->
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Mijoz</th>
+                        <th>Telefon Raqami</th>
+                        <th>Savdo Summasi</th>
+                        <th>To'langan</th>
+                        <th>Qolgan Qarz</th>
+                        <th>Foiz (%)</th>
+                        <th>Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for debtor in debtors %}
+                    <tr>
+                        <td><strong>{{ debtor.customer.full_name }}</strong></td>
+                        <td>{{ debtor.customer.phone_number }}</td>
+                        <td>{{ debtor.sale_amount|summa }}</td>
+                        <td class="text-success">{{ debtor.paid|summa }}</td>
+                        <td class="text-danger">
+                            <strong>{{ debtor.total_debt|summa }}</strong>
+                        </td>
+                        <td>
+                            {% with progress=debtor.paid|add:0|add:debtor.sale_amount %}
+                                {% if debtor.sale_amount > 0 %}
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress|floatformat:1 }}%"></div>
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td>
+                            <a href="{% url 'customers:customer_detail' debtor.customer.pk %}" class="btn btn-sm btn-info">
+                                <i class="bi bi-eye"></i> Ko'rish
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">
+                            <i class="bi bi-check-circle"></i> Hech qanday qarzdor mijoz yo'q!
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

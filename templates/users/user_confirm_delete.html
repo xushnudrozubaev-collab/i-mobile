@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Foydalanuvchini o'chirish - i-Mobile{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-exclamation-triangle"></i> Foydalanuvchini o'chirish
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3">
+                        Siz haqiqatan ham <strong>{{ object.username }}</strong> foydalanuvchisini o'chirmoqchimisiz?
+                    </p>
+                    <p class="text-warning small mb-3">
+                        <i class="bi bi-info-circle"></i> Bu amal qaytarilishi mumkin emas. Foydalanuvchiga bog'liq barcha ma'lumotlar ham o'chilib ketadi.
+                    </p>
+                    <div class="alert alert-info">
+                        <strong>Foydalanuvchi ma'lumoti:</strong><br>
+                        Username: {{ object.username }}<br>
+                        Email: {{ object.email }}<br>
+                        Rol: {{ object.get_role_display }}
+                    </div>
+                </div>
+                <div class="card-footer bg-light">
+                    <form method="post" onsubmit="return confirm('Bu amal qaytarilishi mumkin emas. Rostan ham o\'chirmoqchimisiz?');">
+                        {% csrf_token %}
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Ha, o'chirish
+                            </button>
+                            <a href="{% url 'users:user_detail' object.pk %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Bekor qilish
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

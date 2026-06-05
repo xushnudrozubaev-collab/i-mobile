@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Mahsulot Forma - i-Mobile{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        {% if form.instance.pk %}
+                        <i class="bi bi-pencil"></i> Mahsulotni Tahrirlash
+                        {% else %}
+                        <i class="bi bi-plus-circle"></i> Yangi Mahsulot Qo'shish
+                        {% endif %}
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}<br>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Brend *</label>
+                                {{ form.brand }}
+                                {% if form.brand.errors %}
+                                <div class="text-danger small mt-1">{{ form.brand.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Model *</label>
+                                {{ form.model }}
+                                {% if form.model.errors %}
+                                <div class="text-danger small mt-1">{{ form.model.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">IMEI (Unikal) *</label>
+                            {{ form.imei }}
+                            {% if form.imei.errors %}
+                            <div class="text-danger small mt-1">{{ form.imei.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Narx (сўм) *</label>
+                                {{ form.price }}
+                                {% if form.price.errors %}
+                                <div class="text-danger small mt-1">{{ form.price.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Ombordagi Soni *</label>
+                                {{ form.stock_quantity }}
+                                {% if form.stock_quantity.errors %}
+                                <div class="text-danger small mt-1">{{ form.stock_quantity.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Kafolat Muddati (Oylar) *</label>
+                                {{ form.warranty_months }}
+                                {% if form.warranty_months.errors %}
+                                <div class="text-danger small mt-1">{{ form.warranty_months.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Faol</label>
+                                <div class="form-check">
+                                    {{ form.is_active }}
+                                    <span class="form-check-label">Ushbu mahsulot faol bo'lsin</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Ta'rif</label>
+                            {{ form.description }}
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'products:product_list' %}" class="btn btn-secondary">Orqaga</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Saqlash
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

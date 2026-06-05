@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Mijozni o'chirish - i-Mobile{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-exclamation-triangle"></i> O'chirishni Tasdiqlang
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <p class="lead">{{ customer.full_name }} ni o'chirishni istaysiz?</p>
+                    <p class="text-muted">
+                        <strong>Diqqat:</strong> Bu amalni bekor qilib bo'lmaydi. Mijozning barcha savdo va boshqa ma'lumotlari ham o'chirilib ketadi.
+                    </p>
+                    
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'customers:customer_detail' customer.pk %}" class="btn btn-secondary">
+                                Bekor Qilish
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> O'chirish
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}{{ product.display_name }} - Mahsulot Tafsiloti - i-Mobile {% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="card-title mb-0">
+                            <i class="bi bi-box"></i> {{ product.display_name }}
+                        </h3>
+                        <div>
+                            <a href="{% url 'products:product_edit' product.pk %}" class="btn btn-sm btn-warning text-white">
+                                <i class="bi bi-pencil"></i> Tahrirlash
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-muted">Brend</h6>
+                            <p class="h5">{{ product.brand }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-muted">Model</h6>
+                            <p class="h5">{{ product.model }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="text-muted">IMEI Raqami</h6>
+                        <p class="h5">{{ product.imei }}</p>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-muted">Narx</h6>
+                            <p class="h3 text-success">{{ product.price|summa }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-muted">Kafolat</h6>
+                            <p class="h5">{{ product.warranty_months }} oy</p>
+                        </div>
+                    </div>
+                    
+                    {% if product.description %}
+                    <div class="mb-3">
+                        <h6 class="text-muted">Ta'rif</h6>
+                        <p>{{ product.description }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <hr>
+                    <div class="mb-3">
+                        <h6 class="text-muted">Yaratilgan Sana</h6>
+                        <p class="h5">{{ product.created_at|date:"d.m.Y H:i" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Product Stats -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Ombor Holati</h5>
+                </div>
+                <div class="card-body">
+                    {% if product.stock_quantity > 0 %}
+                    <div class="stat-card success">
+                        <h5>Ombordagi Soni</h5>
+                        <h2>{{ product.stock_quantity }} та</h2>
+                    </div>
+                    {% else %}
+                    <div class="stat-card danger">
+                        <h5>Ombordagi Soni</h5>
+                        <h2>0 та</h2>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Confirmation Delete Modal -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0 text-danger">Mahsulotni O'chirish</h5>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">Bu mahsulot o'chirilsa, barcha bog'langan ma'lumotlar ham o'chirilib ketadi.</p>
+            <a href="{% url 'products:product_delete' product.pk %}" class="btn btn-danger">
+                <i class="bi bi-trash"></i> O'chirish
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
